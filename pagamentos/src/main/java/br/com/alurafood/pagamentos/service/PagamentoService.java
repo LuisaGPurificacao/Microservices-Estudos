@@ -10,12 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PagamentoService {
 
-   @Autowired
-   private PagamentoRepository repository;
+    @Autowired
+    private PagamentoRepository repository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -28,11 +29,12 @@ public class PagamentoService {
 
     public PagamentoDto obterPorId(Long id) {
         Pagamento pagamento = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException());
+                .orElseThrow(EntityNotFoundException::new);
 
         return modelMapper.map(pagamento, PagamentoDto.class);
     }
 
+    @Transactional
     public PagamentoDto criarPagamento(PagamentoDto dto) {
         Pagamento pagamento = modelMapper.map(dto, Pagamento.class);
         pagamento.setStatus(Status.CRIADO);
@@ -41,6 +43,7 @@ public class PagamentoService {
         return modelMapper.map(pagamento, PagamentoDto.class);
     }
 
+    @Transactional
     public PagamentoDto atualizarPagamento(Long id, PagamentoDto dto) {
         Pagamento pagamento = modelMapper.map(dto, Pagamento.class);
         pagamento.setId(id);
